@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react"
 import type { Player } from "@/lib/types"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Slider } from "@/components/ui/slider"
+import { RangeSlider } from "@/components/range-slider"
 
 interface AltairTopPerformersProps {
   players: Player[]
@@ -23,7 +23,7 @@ export function AltairTopPerformers({ players }: AltairTopPerformersProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const [isMounted, setIsMounted] = useState(false)
   const [metric, setMetric] = useState<MetricKey>("goals")
-  const [playerCount, setPlayerCount] = useState(15)
+  const [rankRange, setRankRange] = useState<[number, number]>([1, 50])
   const [baseSpec, setBaseSpec] = useState<any>(null)
 
   useEffect(() => {
@@ -34,7 +34,9 @@ export function AltairTopPerformers({ players }: AltairTopPerformersProps) {
       .catch(console.error)
   }, [])
 
-  const sortedPlayers = [...players].sort((a, b) => b.stats[metric] - a.stats[metric]).slice(0, playerCount)
+  const allSorted = [...players].sort((a, b) => b.stats[metric] - a.stats[metric])
+  const maxPlayers = allSorted.length
+  const sortedPlayers = allSorted.slice(rankRange[0] - 1, rankRange[1])
 
   const topPlayer = sortedPlayers[0]
   const worstPlayer = sortedPlayers[sortedPlayers.length - 1]
@@ -51,9 +53,12 @@ export function AltairTopPerformers({ players }: AltairTopPerformersProps) {
 
     const spec = JSON.parse(JSON.stringify(baseSpec))
 
-    // Update with dynamic values
+    const playerCount = rankRange[1] - rankRange[0] + 1
     spec.height = Math.max(300, playerCount * 25)
-    spec.title.text = `Top ${playerCount} Players by ${metricLabel}`
+    spec.title.text =
+      rankRange[0] === 1
+        ? `Top ${rankRange[1]} Players by ${metricLabel}`
+        : `Players Ranked ${rankRange[0]}-${rankRange[1]} by ${metricLabel}`
     spec.encoding.x.title = metricLabel
     spec.encoding.tooltip[4].title = metricLabel
 
@@ -63,7 +68,7 @@ export function AltairTopPerformers({ players }: AltairTopPerformersProps) {
       team: p.team,
       league: p.league,
       value: p.stats[metric],
-      rank: i + 1,
+      rank: rankRange[0] + i,
     }))
 
     let cleanup = () => {}
@@ -87,7 +92,7 @@ export function AltairTopPerformers({ players }: AltairTopPerformersProps) {
         container.innerHTML = ""
       }
     }
-  }, [sortedPlayers, metric, isMounted, playerCount, baseSpec])
+  }, [sortedPlayers, metric, isMounted, rankRange, baseSpec, metricLabel])
 
   return (
     <div className="bg-zinc-800/50 rounded-xl p-6 border border-zinc-700/50">
@@ -104,27 +109,29 @@ export function AltairTopPerformers({ players }: AltairTopPerformersProps) {
             ))}
           </SelectContent>
         </Select>
-        <div className="flex items-center gap-3">
-          <span className="text-sm text-zinc-400 whitespace-nowrap">Show:</span>
-          <Slider
-            value={[playerCount]}
-            onValueChange={(v) => setPlayerCount(v[0])}
-            min={5}
-            max={100}
+        <div className="flex items-center gap-3 flex-1 min-w-[250px]">
+          <span className="text-sm text-zinc-400 whitespace-nowrap">Rank:</span>
+          <RangeSlider
+            min={1}
+            max={Math.min(maxPlayers, 500)}
+            value={rankRange}
+            onValueChange={setRankRange}
             step={5}
-            className="w-[120px]"
+            className="flex-1"
           />
-          <span className="text-sm text-zinc-100 w-8">{playerCount}</span>
+          <span className="text-sm text-zinc-100 whitespace-nowrap">
+            {rankRange[0]}-{rankRange[1]}
+          </span>
         </div>
       </div>
       <div ref={containerRef} className="w-full min-h-[350px]" />
       <p className="mt-4 text-base text-zinc-400">
         <strong className="text-zinc-300">Takeaway:</strong>{" "}
         {topPlayer
-          ? `${topPlayer.name} leads the top ${playerCount} players in ${metricLabel} with ${topValue.toFixed(1)}, while ${worstPlayer?.name} ranks ${playerCount}th with ${worstValue.toFixed(1)}. `
+          ? `${topPlayer.name} (rank ${rankRange[0]}) leads this selection in ${metricLabel} with ${topValue.toFixed(1)}, while ${worstPlayer?.name} (rank ${rankRange[1]}) has ${worstValue.toFixed(1)}. `
           : ""}
-        The average among these top performers is {avgValue.toFixed(1)} {metricLabel.toLowerCase()}, showing the gap
-        between the best and the cutoff for the top {playerCount} across Europe's Big 5 leagues.
+        The average among players ranked {rankRange[0]}-{rankRange[1]} is {avgValue.toFixed(1)}{" "}
+        {metricLabel.toLowerCase()}.
       </p>
     </div>
   )

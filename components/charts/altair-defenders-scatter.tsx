@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react"
 import type { Player } from "@/lib/types"
-import { Slider } from "@/components/ui/slider"
+import { RangeSlider } from "@/components/range-slider"
 
 interface AltairDefendersScatterProps {
   players: Player[]
@@ -11,7 +11,7 @@ interface AltairDefendersScatterProps {
 export function AltairDefendersScatter({ players }: AltairDefendersScatterProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const [isMounted, setIsMounted] = useState(false)
-  const [playerCount, setPlayerCount] = useState(50)
+  const [rankRange, setRankRange] = useState<[number, number]>([1, 50])
   const [baseSpec, setBaseSpec] = useState<any>(null)
 
   useEffect(() => {
@@ -22,14 +22,16 @@ export function AltairDefendersScatter({ players }: AltairDefendersScatterProps)
       .catch(console.error)
   }, [])
 
-  const defenders = players
+  const allDefenders = players
     .filter((p) => p.position === "Defender" && (p.stats.tackles > 0 || p.stats.interceptions > 0))
     .sort((a, b) => {
       const totalA = a.stats.tackles + a.stats.interceptions + a.stats.clearances + a.stats.blocks
       const totalB = b.stats.tackles + b.stats.interceptions + b.stats.clearances + b.stats.blocks
       return totalB - totalA
     })
-    .slice(0, playerCount)
+
+  const maxPlayers = allDefenders.length
+  const defenders = allDefenders.slice(rankRange[0] - 1, rankRange[1])
 
   const topTackler = [...defenders].sort((a, b) => b.stats.tackles - a.stats.tackles)[0]
   const topInterceptor = [...defenders].sort((a, b) => b.stats.interceptions - a.stats.interceptions)[0]
@@ -45,7 +47,10 @@ export function AltairDefendersScatter({ players }: AltairDefendersScatterProps)
 
     const spec = JSON.parse(JSON.stringify(baseSpec))
 
-    spec.title.text = `Top ${playerCount} Defenders: Tackles vs Interceptions`
+    spec.title.text =
+      rankRange[0] === 1
+        ? `Top ${rankRange[1]} Defenders: Tackles vs Interceptions`
+        : `Defenders Ranked ${rankRange[0]}-${rankRange[1]}: Tackles vs Interceptions`
 
     // Inject the filtered defender data
     spec.data.values = defenders.map((p) => ({
@@ -80,25 +85,27 @@ export function AltairDefendersScatter({ players }: AltairDefendersScatterProps)
         container.innerHTML = ""
       }
     }
-  }, [defenders, isMounted, playerCount, baseSpec])
+  }, [defenders, isMounted, rankRange, baseSpec])
 
   return (
     <div className="bg-zinc-800/50 rounded-xl p-6 border border-zinc-700/50">
       <div className="flex items-center gap-4 mb-4">
-        <label className="text-sm text-zinc-400 whitespace-nowrap">Players to show:</label>
-        <Slider
-          value={[playerCount]}
-          onValueChange={(value) => setPlayerCount(value[0])}
-          min={10}
-          max={100}
+        <label className="text-sm text-zinc-400 whitespace-nowrap">Defender Rank:</label>
+        <RangeSlider
+          min={1}
+          max={Math.min(maxPlayers, 300)}
+          value={rankRange}
+          onValueChange={setRankRange}
           step={5}
-          className="w-48"
+          className="w-64"
         />
-        <span className="text-sm text-zinc-300 w-8">{playerCount}</span>
+        <span className="text-sm text-zinc-300 whitespace-nowrap">
+          {rankRange[0]}-{rankRange[1]}
+        </span>
       </div>
       <div ref={containerRef} className="w-full min-h-[450px]" />
       <p className="mt-4 text-base text-zinc-400">
-        <strong className="text-zinc-300">Takeaway:</strong> Among the top {playerCount} defenders,
+        <strong className="text-zinc-300">Takeaway:</strong> Among defenders ranked {rankRange[0]}-{rankRange[1]},
         {topTackler && ` ${topTackler.name} leads in tackles (${topTackler.stats.tackles})`}
         {topInterceptor && ` while ${topInterceptor.name} tops interceptions (${topInterceptor.stats.interceptions}).`}{" "}
         The average defender in this group records {avgTackles.toFixed(1)} tackles and {avgInterceptions.toFixed(1)}{" "}

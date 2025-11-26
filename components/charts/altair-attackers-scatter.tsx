@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react"
 import type { Player } from "@/lib/types"
-import { Slider } from "@/components/ui/slider"
+import { RangeSlider } from "@/components/range-slider"
 
 interface AltairGoalsXGScatterProps {
   players: Player[]
@@ -11,7 +11,7 @@ interface AltairGoalsXGScatterProps {
 export function AltairGoalsXGScatter({ players }: AltairGoalsXGScatterProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const [isMounted, setIsMounted] = useState(false)
-  const [playerCount, setPlayerCount] = useState(50)
+  const [rankRange, setRankRange] = useState<[number, number]>([1, 50])
   const [baseSpec, setBaseSpec] = useState<any>(null)
 
   useEffect(() => {
@@ -22,10 +22,12 @@ export function AltairGoalsXGScatter({ players }: AltairGoalsXGScatterProps) {
       .catch(console.error)
   }, [])
 
-  const attackingPlayers = players
+  const allAttackers = players
     .filter((p) => p.position === "Forward" && (p.stats.goals > 0 || p.stats.xG > 0))
     .sort((a, b) => b.stats.goals - a.stats.goals)
-    .slice(0, playerCount)
+
+  const maxPlayers = allAttackers.length
+  const attackingPlayers = allAttackers.slice(rankRange[0] - 1, rankRange[1])
 
   const overperformers = attackingPlayers.filter((p) => p.stats.goals - p.stats.xG > 2)
   const underperformers = attackingPlayers.filter((p) => p.stats.goals - p.stats.xG < -2)
@@ -43,8 +45,10 @@ export function AltairGoalsXGScatter({ players }: AltairGoalsXGScatterProps) {
 
     const spec = JSON.parse(JSON.stringify(baseSpec))
 
-    // Update title with player count
-    spec.title.text = `Goals vs Expected Goals (xG) - Top ${playerCount} Scorers`
+    spec.title.text =
+      rankRange[0] === 1
+        ? `Expected Goals vs Actual Goals - Top ${rankRange[1]} Scorers`
+        : `Expected Goals vs Actual Goals - Scorers Ranked ${rankRange[0]}-${rankRange[1]}`
 
     // Inject the filtered player data into the scatter layer (index 1)
     spec.layer[1].data.values = attackingPlayers.map((p) => ({
@@ -55,9 +59,9 @@ export function AltairGoalsXGScatter({ players }: AltairGoalsXGScatterProps) {
       xG: p.stats.xG,
       diff: p.stats.goals - p.stats.xG,
       performance:
-        p.stats.goals - p.stats.xG > 3
+        p.stats.goals - p.stats.xG > 2
           ? "Overperformer"
-          : p.stats.goals - p.stats.xG < -3
+          : p.stats.goals - p.stats.xG < -2
             ? "Underperformer"
             : "Average",
     }))
@@ -83,25 +87,27 @@ export function AltairGoalsXGScatter({ players }: AltairGoalsXGScatterProps) {
         container.innerHTML = ""
       }
     }
-  }, [attackingPlayers, isMounted, playerCount, baseSpec])
+  }, [attackingPlayers, isMounted, rankRange, baseSpec])
 
   return (
     <div className="bg-zinc-800/50 rounded-xl p-6 border border-zinc-700/50">
       <div className="flex items-center gap-4 mb-4">
-        <label className="text-sm text-zinc-400 whitespace-nowrap">Players to show:</label>
-        <Slider
-          value={[playerCount]}
-          onValueChange={(value) => setPlayerCount(value[0])}
-          min={10}
-          max={100}
+        <label className="text-sm text-zinc-400 whitespace-nowrap">Scorer Rank:</label>
+        <RangeSlider
+          min={1}
+          max={Math.min(maxPlayers, 300)}
+          value={rankRange}
+          onValueChange={setRankRange}
           step={5}
-          className="w-48"
+          className="w-64"
         />
-        <span className="text-sm text-zinc-300 w-8">{playerCount}</span>
+        <span className="text-sm text-zinc-300 whitespace-nowrap">
+          {rankRange[0]}-{rankRange[1]}
+        </span>
       </div>
       <div ref={containerRef} className="w-full min-h-[450px]" />
       <p className="mt-4 text-base text-zinc-400">
-        <strong className="text-zinc-300">Takeaway:</strong> Among the top {playerCount} scorers,{" "}
+        <strong className="text-zinc-300">Takeaway:</strong> Among scorers ranked {rankRange[0]}-{rankRange[1]},{" "}
         {overperformers.length} players significantly outperform their xG (clinical finishers above the line) while{" "}
         {underperformers.length} underperform.
         {topOverperformer &&
