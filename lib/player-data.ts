@@ -1,70 +1,76 @@
-import type { Player, Position, League } from "./types"
+import type { Player, Position, League } from "./types";
 
 // Parse CSV data
 function parseCSV(csvText: string): Record<string, string>[] {
-  const lines = csvText.trim().split("\n")
-  const headers = parseCSVLine(lines[0])
-  const rows: Record<string, string>[] = []
+  const lines = csvText.trim().split("\n");
+  const headers = parseCSVLine(lines[0]);
+  const rows: Record<string, string>[] = [];
 
   for (let i = 1; i < lines.length; i++) {
-    const values = parseCSVLine(lines[i])
-    const row: Record<string, string> = {}
+    const values = parseCSVLine(lines[i]);
+    const row: Record<string, string> = {};
     headers.forEach((header, index) => {
-      row[header] = values[index] || ""
-    })
-    rows.push(row)
+      row[header] = values[index] || "";
+    });
+    rows.push(row);
   }
-  return rows
+  return rows;
 }
 
 function parseCSVLine(line: string): string[] {
-  const result: string[] = []
-  let current = ""
-  let inQuotes = false
+  const result: string[] = [];
+  let current = "";
+  let inQuotes = false;
 
   for (let i = 0; i < line.length; i++) {
-    const char = line[i]
+    const char = line[i];
 
     if (char === '"') {
-      inQuotes = !inQuotes
+      inQuotes = !inQuotes;
     } else if (char === "," && !inQuotes) {
-      result.push(current.trim())
-      current = ""
+      result.push(current.trim());
+      current = "";
     } else {
-      current += char
+      current += char;
     }
   }
-  result.push(current.trim())
+  result.push(current.trim());
 
-  return result
+  return result;
 }
 
 // Process raw data into Player objects
 function processPlayerData(rows: Record<string, string>[]): Player[] {
-  const players: Player[] = []
-  const seenPlayers = new Set<string>()
-  const parseNum = (val: string): number => Number.parseFloat(val) || 0
+  const players: Player[] = [];
+  const seenPlayers = new Set<string>();
+  const parseNum = (val: string): number => Number.parseFloat(val) || 0;
 
   for (const row of rows) {
-    const validLeagues = ["Premier League", "La Liga", "Serie A", "Bundesliga", "Ligue 1"]
-    if (!validLeagues.includes(row.Comp)) continue
+    const validLeagues = [
+      "Premier League",
+      "La Liga",
+      "Serie A",
+      "Bundesliga",
+      "Ligue 1",
+    ];
+    if (!validLeagues.includes(row.Comp)) continue;
 
-    const minutes = parseNum(row.Min?.replace(",", ""))
-    if (minutes < 90) continue
+    const minutes = parseNum(row.Min?.replace(",", ""));
+    if (minutes < 90) continue;
 
-    const playerId = `${row.Player}-${row.Squad}`.replace(/\s/g, "-")
-    if (seenPlayers.has(playerId)) continue
-    seenPlayers.add(playerId)
+    const playerId = `${row.Player}-${row.Squad}`.replace(/\s/g, "-");
+    if (seenPlayers.has(playerId)) continue;
+    seenPlayers.add(playerId);
 
-    const pos = row.Pos || ""
-    let position: Position = "Midfielder"
+    const pos = row.Pos || "";
+    let position: Position = "Midfielder";
 
     if (pos.startsWith("DF")) {
-      position = "Defender"
+      position = "Defender";
     } else if (pos.startsWith("FW")) {
-      position = "Forward"
+      position = "Forward";
     } else if (pos.startsWith("MF") || pos.includes("MF")) {
-      position = "Midfielder"
+      position = "Midfielder";
     }
 
     players.push({
@@ -132,27 +138,37 @@ function processPlayerData(rows: Record<string, string>[]): Player[] {
         yellowCards: parseNum(row.CrdY),
         redCards: parseNum(row.CrdR),
       },
-    })
+    });
   }
 
-  return players
+  return players;
 }
 
 export async function fetchPlayerData(): Promise<Player[]> {
-  const response = await fetch("/data/big5-combined-2022-23.csv")
-  const csvText = await response.text()
-  const rows = parseCSV(csvText)
-  return processPlayerData(rows)
+  const response = await fetch("/data/Big5-combined-2022-23.csv");
+  const csvText = await response.text();
+  const rows = parseCSV(csvText);
+  return processPlayerData(rows);
 }
 
 export function getTeams(players: Player[]): string[] {
-  return [...new Set(players.map((p) => p.team))].sort()
+  return [...new Set(players.map((p) => p.team))].sort();
 }
 
 export function getLeagues(): League[] {
-  return ["Premier League", "La Liga", "Serie A", "Bundesliga", "Ligue 1"]
+  return ["Premier League", "La Liga", "Serie A", "Bundesliga", "Ligue 1"];
 }
 
-export const positions: Array<"Forward" | "Midfielder" | "Defender"> = ["Forward", "Midfielder", "Defender"]
+export const positions: Array<"Forward" | "Midfielder" | "Defender"> = [
+  "Forward",
+  "Midfielder",
+  "Defender",
+];
 
-export const leagues: League[] = ["Premier League", "La Liga", "Serie A", "Bundesliga", "Ligue 1"]
+export const leagues: League[] = [
+  "Premier League",
+  "La Liga",
+  "Serie A",
+  "Bundesliga",
+  "Ligue 1",
+];

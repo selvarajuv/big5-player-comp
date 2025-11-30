@@ -21,6 +21,7 @@ A web application for comparing football players across the Big 5 European leagu
 **Source:** Big 5 European leagues 2022-23 season statistics
 
 **Key Metrics:**
+
 - Attacking: Goals, Assists, xG, Shots, Dribbles, Progressive Actions
 - Defending: Tackles, Interceptions, Blocks, Clearances, Aerial Duels
 - Possession: Touches by zone, Pass completion by range
@@ -28,6 +29,7 @@ A web application for comparing football players across the Big 5 European leagu
 ## Visualizations
 
 ### Attackers
+
 1. Radar Chart - Performance profile
 2. Shot Map - Shot locations on pitch
 3. xG vs Actual Goals - Efficiency comparison
@@ -35,6 +37,7 @@ A web application for comparing football players across the Big 5 European leagu
 5. Progressive Actions Flow - Ball advancement
 
 ### Defenders
+
 1. Radar Chart - Defensive profile
 2. Pass Origin Heatmap - Passing zones
 3. Defensive Actions - Pie chart breakdown
