@@ -63,8 +63,6 @@ function processPlayerData(rows: Record<string, string>[]): Player[] {
       position = "Defender"
     } else if (pos.startsWith("FW")) {
       position = "Forward"
-    } else if (pos === "GK") {
-      position = "Goalkeeper"
     } else if (pos.startsWith("MF") || pos.includes("MF")) {
       position = "Midfielder"
     }
@@ -155,11 +153,6 @@ export function getLeagues(): League[] {
   return ["Premier League", "La Liga", "Serie A", "Bundesliga", "Ligue 1"]
 }
 
-export const positions: Array<"Forward" | "Midfielder" | "Defender" | "Goalkeeper"> = [
-  "Forward",
-  "Midfielder",
-  "Defender",
-  "Goalkeeper",
-]
+export const positions: Array<"Forward" | "Midfielder" | "Defender"> = ["Forward", "Midfielder", "Defender"]
 
 export const leagues: League[] = ["Premier League", "La Liga", "Serie A", "Bundesliga", "Ligue 1"]
