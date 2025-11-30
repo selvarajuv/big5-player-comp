@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react"
 import type { Player } from "@/lib/types"
 import { RangeSlider } from "@/components/range-slider"
+import { getAssetPath } from "@/lib/config"
 
 interface AltairDefendersScatterProps {
   players: Player[]
@@ -16,7 +17,7 @@ export function AltairDefendersScatter({ players }: AltairDefendersScatterProps)
 
   useEffect(() => {
     setIsMounted(true)
-    fetch("/charts/defenders-spec.json")
+    fetch(getAssetPath("/charts/defenders-spec.json"))
       .then((res) => res.json())
       .then((spec) => setBaseSpec(spec))
       .catch(console.error)

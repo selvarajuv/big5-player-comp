@@ -1,4 +1,5 @@
 import type { Player, Position, League } from "./types"
+import { getAssetPath } from "./config"
 
 // Parse CSV data
 function parseCSV(csvText: string): Record<string, string>[] {
@@ -139,7 +140,7 @@ function processPlayerData(rows: Record<string, string>[]): Player[] {
 }
 
 export async function fetchPlayerData(): Promise<Player[]> {
-  const response = await fetch("/data/big5-combined-2022-23.csv")
+  const response = await fetch(getAssetPath("/data/big5-combined-2022-23.csv"))
   const csvText = await response.text()
   const rows = parseCSV(csvText)
   return processPlayerData(rows)

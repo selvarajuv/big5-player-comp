@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react"
 import type { Player } from "@/lib/types"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { RangeSlider } from "@/components/range-slider"
+import { getAssetPath } from "@/lib/config"
 
 interface AltairTopPerformersProps {
   players: Player[]
@@ -28,7 +29,7 @@ export function AltairTopPerformers({ players }: AltairTopPerformersProps) {
 
   useEffect(() => {
     setIsMounted(true)
-    fetch("/charts/top-performers-spec.json")
+    fetch(getAssetPath("/charts/top-performers-spec.json"))
       .then((res) => res.json())
       .then((spec) => setBaseSpec(spec))
       .catch(console.error)
