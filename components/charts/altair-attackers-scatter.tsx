@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from "react"
 import type { Player } from "@/lib/types"
 import { RangeSlider } from "@/components/range-slider"
-import { getAssetPath } from "@/lib/config"
 
 interface AltairGoalsXGScatterProps {
   players: Player[]
@@ -17,7 +16,7 @@ export function AltairGoalsXGScatter({ players }: AltairGoalsXGScatterProps) {
 
   useEffect(() => {
     setIsMounted(true)
-    fetch(getAssetPath("/charts/goals-xg-spec.json"))
+    fetch("/charts/goals-xg-spec.json")
       .then((res) => res.json())
       .then((spec) => setBaseSpec(spec))
       .catch(console.error)
