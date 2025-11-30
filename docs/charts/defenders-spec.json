@@ -1,0 +1,84 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "config": { "view": { "stroke": null } },
+  "width": "container",
+  "height": 400,
+  "title": {
+    "text": "Top Defenders: Tackles vs Interceptions",
+    "subtitle": "Defensive contribution analysis across Big 5 Leagues",
+    "color": "#e4e4e7",
+    "subtitleColor": "#a1a1aa",
+    "fontSize": 18,
+    "subtitleFontSize": 14
+  },
+  "background": "transparent",
+  "params": [
+    {
+      "name": "legendSelect",
+      "select": { "type": "point", "fields": ["league"] },
+      "bind": "legend"
+    }
+  ],
+  "data": { "values": [] },
+  "mark": { "type": "point", "size": 300, "filled": true },
+  "encoding": {
+    "x": {
+      "field": "tackles",
+      "type": "quantitative",
+      "title": "Tackles",
+      "axis": {
+        "labelColor": "#a1a1aa",
+        "titleColor": "#e4e4e7",
+        "gridColor": "#3f3f46",
+        "labelFontSize": 14,
+        "titleFontSize": 16
+      }
+    },
+    "y": {
+      "field": "interceptions",
+      "type": "quantitative",
+      "title": "Interceptions",
+      "axis": {
+        "labelColor": "#a1a1aa",
+        "titleColor": "#e4e4e7",
+        "gridColor": "#3f3f46",
+        "labelFontSize": 14,
+        "titleFontSize": 16
+      }
+    },
+    "color": {
+      "condition": {
+        "param": "legendSelect",
+        "field": "league",
+        "type": "nominal",
+        "scale": {
+          "domain": ["Premier League", "La Liga", "Serie A", "Bundesliga", "Ligue 1"],
+          "range": ["#10b981", "#3b82f6", "#f59e0b", "#ef4444", "#8b5cf6"]
+        },
+        "legend": {
+          "title": "League",
+          "labelColor": "#e4e4e7",
+          "titleColor": "#e4e4e7",
+          "orient": "bottom",
+          "labelFontSize": 16,
+          "titleFontSize": 18,
+          "symbolSize": 200
+        }
+      },
+      "value": "#52525b"
+    },
+    "opacity": {
+      "condition": { "param": "legendSelect", "value": 0.8 },
+      "value": 0.15
+    },
+    "tooltip": [
+      { "field": "name", "type": "nominal", "title": "Player" },
+      { "field": "team", "type": "nominal", "title": "Team" },
+      { "field": "league", "type": "nominal", "title": "League" },
+      { "field": "tackles", "type": "quantitative", "title": "Tackles" },
+      { "field": "interceptions", "type": "quantitative", "title": "Interceptions" },
+      { "field": "clearances", "type": "quantitative", "title": "Clearances" },
+      { "field": "blocks", "type": "quantitative", "title": "Blocks" }
+    ]
+  }
+}

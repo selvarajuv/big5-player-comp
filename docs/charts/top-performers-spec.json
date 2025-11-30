@@ -1,0 +1,38 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "config": { "view": { "stroke": null } },
+  "width": "container",
+  "height": 400,
+  "title": { "text": "Top Players by Goals", "color": "#e4e4e7", "fontSize": 18 },
+  "background": "transparent",
+  "data": { "values": [] },
+  "mark": { "type": "bar", "cornerRadiusEnd": 4, "color": "#059669" },
+  "encoding": {
+    "y": {
+      "field": "name",
+      "type": "nominal",
+      "title": null,
+      "sort": "-x",
+      "axis": { "labelColor": "#e4e4e7", "labelLimit": 120, "labelFontSize": 12 }
+    },
+    "x": {
+      "field": "value",
+      "type": "quantitative",
+      "title": "Goals",
+      "axis": {
+        "labelColor": "#a1a1aa",
+        "titleColor": "#e4e4e7",
+        "gridColor": "#3f3f46",
+        "labelFontSize": 12,
+        "titleFontSize": 14
+      }
+    },
+    "tooltip": [
+      { "field": "rank", "type": "quantitative", "title": "Rank" },
+      { "field": "name", "type": "nominal", "title": "Player" },
+      { "field": "team", "type": "nominal", "title": "Team" },
+      { "field": "league", "type": "nominal", "title": "League" },
+      { "field": "value", "type": "quantitative", "title": "Value" }
+    ]
+  }
+}
