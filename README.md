@@ -1,30 +1,42 @@
-# Premier League player comparison
+# Premier League Player Comparison
 
-*Automatically synced with your [v0.app](https://v0.app) deployments*
+A web application for comparing football players across the Big 5 European leagues (2022-23 season).
 
-[![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/selvarajuvs-projects/v0-premier-league-player-comparison)
-[![Built with v0](https://img.shields.io/badge/Built%20with-v0.app-black?style=for-the-badge)](https://v0.app/chat/lHTX3319NaN)
+## Features
 
-## Overview
+- **Side-by-side player comparison** with searchable dropdowns
+- **Filter by:** League, Position, Team
+- **Position-specific visualizations** (different charts for attackers vs defenders)
+- **5 interactive visualizations** per player including radar charts, shot maps, heatmaps, and more
 
-This repository will stay in sync with your deployed chats on [v0.app](https://v0.app).
-Any changes you make to your deployed app will be automatically pushed to this repository from [v0.app](https://v0.app).
+## Tech Stack
 
-## Deployment
+- **React** + TypeScript
+- **Recharts** / D3.js / Vega-Lite for visualizations
+- **Python** + Pandas for data processing
+- **2,889 players** across Premier League, La Liga, Bundesliga, Serie A, Ligue 1
 
-Your project is live at:
+## Data
 
-**[https://vercel.com/selvarajuvs-projects/v0-premier-league-player-comparison](https://vercel.com/selvarajuvs-projects/v0-premier-league-player-comparison)**
+**Source:** Big 5 European leagues 2022-23 season statistics
 
-## Build your app
+**Key Metrics:**
+- Attacking: Goals, Assists, xG, Shots, Dribbles, Progressive Actions
+- Defending: Tackles, Interceptions, Blocks, Clearances, Aerial Duels
+- Possession: Touches by zone, Pass completion by range
 
-Continue building your app on:
+## Visualizations
 
-**[https://v0.app/chat/lHTX3319NaN](https://v0.app/chat/lHTX3319NaN)**
+### Attackers
+1. Radar Chart - Performance profile
+2. Shot Map - Shot locations on pitch
+3. xG vs Actual Goals - Efficiency comparison
+4. Touch Heatmap - Activity zones
+5. Progressive Actions Flow - Ball advancement
 
-## How It Works
-
-1. Create and modify your project using [v0.app](https://v0.app)
-2. Deploy your chats from the v0 interface
-3. Changes are automatically pushed to this repository
-4. Vercel deploys the latest version from this repository
+### Defenders
+1. Radar Chart - Defensive profile
+2. Pass Origin Heatmap - Passing zones
+3. Defensive Actions - Pie chart breakdown
+4. Tackle Heatmap - Tackle locations
+5. Pass Completion - By range (short/medium/long)
