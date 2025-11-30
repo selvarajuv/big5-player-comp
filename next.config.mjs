@@ -2,8 +2,8 @@
 const nextConfig = {
   output: 'export',
   distDir: 'docs',
-  basePath: process.env.NODE_ENV === 'production' ? '/big5-player-comparison' : '',
-  assetPrefix: process.env.NODE_ENV === 'production' ? '/big5-player-comparison/' : '',
+  basePath: process.env.NODE_ENV === 'production' ? '/big5-player-comp' : '',
+  assetPrefix: process.env.NODE_ENV === 'production' ? '/big5-player-comp/' : '',
   typescript: {
     ignoreBuildErrors: true,
   },
